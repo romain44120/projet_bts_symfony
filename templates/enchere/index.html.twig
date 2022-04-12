@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello EnchereController!{% endblock %}
+
+{% block body %}
+<h1>Enchere</h1>
+{#   valeur recuperer et afficher pour tester la connectiuon a l'api#}
+{#   {{ status }}#}
+
+
+   <ul>
+{#      {% for fournisseur in allfournisseur%}#}
+{#         <li>{{ fournisseur.prenom }}</li>#}
+{#          {% if user == 'romain' %}#}
+{#              <li>{{ fournisseur.prenom }}</li>#}
+
+{#          {% endif %}#}
+{#      {% endfor %}#}
+
+       <li>{{ Nom_Fournisseur }}</li>
+       {% for ref in refbypanier %}
+          <ul>{{ ref.reference }}</ul>
+       {% endfor %}
+
+
+
+
+   </ul>
+
+{% endblock %}
