@@ -3,28 +3,63 @@
 {% block title %}Hello EnchereController!{% endblock %}
 
 {% block body %}
-<h1>Enchere</h1>
-{#   valeur recuperer et afficher pour tester la connectiuon a l'api#}
-{#   {{ status }}#}
+    <h1>Enchere</h1>
 
 
-   <ul>
-{#      {% for fournisseur in allfournisseur%}#}
-{#         <li>{{ fournisseur.prenom }}</li>#}
-{#          {% if user == 'romain' %}#}
-{#              <li>{{ fournisseur.prenom }}</li>#}
-
-{#          {% endif %}#}
-{#      {% endfor %}#}
-
-       <li>{{ Nom_Fournisseur }}</li>
-       {% for ref in refbypanier %}
-          <ul>{{ ref.reference }}</ul>
-       {% endfor %}
+    <ul>
+    <a>l'enchere commencera à {{ encheres.dateDebut |date('H:i:s')}} et ce finira à {{ encheres.dateFin |date('H:i:s')}}</a>
+        <li>vous encherisser pour la societée{{ societe_Fournisseur }}</li>
 
 
+        <table>
+            <thead>
+            <tr>
+                <td>Reférence</td>
+                <td>Marque</td>
+                <td>Libellé</td>
+                <td>Enchère</td>
+                <td></td>
+            </tr>
+            </thead>
+            <tbody>
+            {% for ref in refbypanier %}
+                <tr>
+                    <td>{{ ref.reference }}</td>
+                    <td>{{ ref.libelle }}</td>
+                    <td>{{ ref.marque }}</td>
+                    <td><input id="{{ ref.reference }}" type="number"></td>
+                    <td><button type="submit" class="btn btn-success" onclick="faireUneEnchere('{{ ref.reference }}')" >Enchérir</button></td>
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
 
 
-   </ul>
+{#        {% for enchere in encheres %}#}
+{#            <ul>{{ enchere.id }}</ul>#}
+
+{#            {{ enchere.dateDebut | date('d/m/Y') }} à {{  enchere.dateDebut | date('H') }}h{% if   enchere.dateDebut | date('i') != 00 %}{{  enchere.dateDebut | date('i') }}{% endif %}#}
+{#            {{ enchere.dateFin | date('d/m/Y') }} à {{  enchere.dateFin | date('H') }}h{% if   enchere.dateFin | date('i') != 00 %}{{  enchere.dateFin | date('i') }}{% endif %}#}
+
+{#        {% endfor %}#}
+        {% block javascripts %}
+            <script type="text/javascript">
+                const faireUneEnchere = (reference) => {
+                    var prix = document.getElementById(reference).value;
+                 //   console.log('Prix: ' + prix + ' reference :', reference)
+
+                    let xhr = new XMLHttpRequest();
+                    xhr.open("POST", "/encherir");
+                    xhr.send(JSON.stringify({ "reference": reference, "prix": prix }));
+
+                }
+            </script>
+
+        {% endblock %}
+
+
+
+    </ul>
 
 {% endblock %}

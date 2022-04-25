@@ -14,7 +14,10 @@
 
         <button type="submit" class="btn">Register</button>
     {{ form_end(registrationForm) }}
-{#    {% for fournisseur in allfournisseur %}#}
-{#        <ul>{{ fournisseur.nom }}</ul>#}
-{#    {% endfor %}#}
+
+    <h2>liste des fournisseurs</h2>
+
+    {% for fournisseur in allfournisseur %}
+        <ul>{{ fournisseur.nom }}</ul>
+    {% endfor %}
 {% endblock %}

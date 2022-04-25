@@ -14,17 +14,17 @@ class EnchereFournisseur
     private $id;
 
     #[ORM\ManyToOne(targetEntity: Enchere::class, inversedBy: 'enchereFournisseurs')]
-    #[ORM\JoinColumn(nullable: false)]
-    private $idEnchere;
+    #[ORM\JoinColumn(nullable: true)]
+    public $idEnchere;
 
     #[ORM\Column(type: 'float')]
-    private $prix;
+    public $prix;
 
     #[ORM\Column(type: 'string', length: 60)]
-    private $fournisseur;
+    public $fournisseur;
 
     #[ORM\Column(type: 'string', length: 100, nullable: true)]
-    private $produit;
+    public $produit;
 
     public function getId(): ?int
     {

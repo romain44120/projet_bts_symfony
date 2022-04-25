@@ -8,6 +8,7 @@ use App\Form\RegistrationFormType;
 use App\Security\Usertest1Authenticator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -26,6 +27,9 @@ class RegistrationController extends AbstractController
         {
             return $this->redirectToRoute('app_page');
         }
+        $client = HttpClient::create(defaultOptions: ['verify_peer' => false, 'verify_host' => false]); //creation clien qui peut faire des requettes vers l'api sans verif certif ssl
+        $res  = $client->request(method: 'GET', url: 'https://localhost:44362/Fournisseur/AllFounrisseurs');
+        $allfournisseur = $res->toArray();
 
 
         $user = new User();
@@ -55,7 +59,7 @@ class RegistrationController extends AbstractController
 
         return $this->render('registration/register.html.twig', [
             'registrationForm' => $form->createView(),
-           // 'allfournisseur' => $allfournisseur
+            'allfournisseur' => $allfournisseur
         ]);
     }
 }

@@ -5,7 +5,22 @@
 {% block body %}
 <h1>Ajouter une Enchere</h1>
 
+<h2>allpanierglobal</h2>
+   {% for panier in allpanierglobal%}
+      <li>id panier {{ panier.id }}</li>
+      <li>semaine {{ panier.semaine }}</li>
+   {% endfor %}
 
+{#   {% for dernierPanierGlobal in dernierPanierGlobal%}#}
+{#      <li>{{ dernierPanierGlobal.id }}</li>#}
+{#      <li>{{ dernierPanierGlobal.semaine }}</li>#}
+{#   {% endfor %}#}
+   <div class="form-group">
+      {{ form_start(form) }}
+      {{ form_widget(form) }}
+      <button type="submit" class="btn btn-success">Ajouter</button>
+      {{ form_end(form) }}
+   </div>
 
 
    </ul>

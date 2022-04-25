@@ -8,21 +8,24 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: EnchereRepository::class)]
-class Enchere
+ class Enchere
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private $id;
+    public $id;
 
     #[ORM\Column(type: 'datetime')]
-    private $dateDebut;
+    public $dateDebut;
 
     #[ORM\Column(type: 'datetime')]
-    private $dateFin;
+    public $dateFin;
 
     #[ORM\OneToMany(mappedBy: 'idEnchere', targetEntity: EnchereFournisseur::class)]
-    private $enchereFournisseurs;
+    public $enchereFournisseurs;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    public $idPanierGlobal;
 
     public function __construct()
     {
@@ -84,6 +87,18 @@ class Enchere
                 $enchereFournisseur->setIdEnchere(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getIdPanierGlobal(): ?float
+    {
+        return $this->idPanierGlobal;
+    }
+
+    public function setIdPanierGlobal(?float $idPanierGlobal): self
+    {
+        $this->idPanierGlobal = $idPanierGlobal;
 
         return $this;
     }
