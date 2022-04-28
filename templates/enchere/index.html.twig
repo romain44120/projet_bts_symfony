@@ -5,10 +5,17 @@
 {% block body %}
     <h1>Enchere</h1>
 
-
     <ul>
-    <a>l'enchere commencera à {{ encheres.dateDebut |date('H:i:s')}} et ce finira à {{ encheres.dateFin |date('H:i:s')}}</a>
-        <li>vous encherisser pour la societée{{ societe_Fournisseur }}</li>
+        {% if (dateactuelle |date('d-M-y  H:i') < encheres.dateDebut |date('d-M-y  H:i')) %}
+            <a>il n'y a pas encore d'enchere pour cette semaine </a>
+        {% endif %}
+        {% if (encheres.dateFin |date('d-M-y  H:i') < dateactuelle |date('d-M-y  H:i')) %}
+            <a>enchere est deja passée pour cette semaine </a>
+        {% endif %}
+        {% if ( encheres.dateDebut |date('d-M-y  H:i') < dateactuelle |date('d-M-y  H:i') and  dateactuelle < encheres.dateFin |date('d-M-y  H:i')) %}
+
+    <a>l'enchere commencera le {{ encheres.dateDebut |date('d-M-y H:i:s')}} et ce finira le {{ encheres.dateFin |date('d-M-y H:i:s')}}</a>
+        <li>vous encherisser pour la societé {{ societe_Fournisseur }}</li>
 
 
         <table>
@@ -17,41 +24,56 @@
                 <td>Reférence</td>
                 <td>Marque</td>
                 <td>Libellé</td>
+                <td>Quantités</td>
                 <td>Enchère</td>
-                <td></td>
             </tr>
             </thead>
             <tbody>
-            {% for ref in refbypanier %}
+            {% for refbypanier in refbypanier %}
                 <tr>
-                    <td>{{ ref.reference }}</td>
-                    <td>{{ ref.libelle }}</td>
-                    <td>{{ ref.marque }}</td>
-                    <td><input id="{{ ref.reference }}" type="number"></td>
-                    <td><button type="submit" class="btn btn-success" onclick="faireUneEnchere('{{ ref.reference }}')" >Enchérir</button></td>
+                    <td>{{ refbypanier.reference }}</td>
+                    <td>{{ refbypanier.libelle }}</td>
+                    <td>{{ refbypanier.marque }}</td>
+
+                    {% for reference in AllReferences %}
+                        {% if refbypanier.reference == reference.reference %}
+                            {% for panierglobaldetail in panierglobaldetail %}
+                                {% if reference.id ==  panierglobaldetail.iD_REFERENCE %}
+                                <td>{{ panierglobaldetail.quantitE_GLOBAL }}</td>
+
+                                    {# envoyer panierglobaldetail.quantitE_GLOBAL    panierglobaldetail.id      #}
+
+                                    <td><input class="{{ refbypanier.reference }}" type="number"></td>
+                                    <td><input value={{ panierglobaldetail.quantitE_GLOBAL }} class="{{refbypanier.reference}}" type="hidden"></td>
+                                    <td><input  class="{{ refbypanier.reference }}" type="hidden" value={{ panierglobaldetail.id  }}></td>
+                                    <td><button type="submit" class="btn btn-success" onclick="faireUneEnchere('{{ refbypanier.reference }}')" >Enchérir</button></td>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+
+
                 </tr>
             {% endfor %}
 
             </tbody>
         </table>
 
+        {% endif %}
 
-{#        {% for enchere in encheres %}#}
-{#            <ul>{{ enchere.id }}</ul>#}
-
-{#            {{ enchere.dateDebut | date('d/m/Y') }} à {{  enchere.dateDebut | date('H') }}h{% if   enchere.dateDebut | date('i') != 00 %}{{  enchere.dateDebut | date('i') }}{% endif %}#}
-{#            {{ enchere.dateFin | date('d/m/Y') }} à {{  enchere.dateFin | date('H') }}h{% if   enchere.dateFin | date('i') != 00 %}{{  enchere.dateFin | date('i') }}{% endif %}#}
-
-{#        {% endfor %}#}
         {% block javascripts %}
             <script type="text/javascript">
                 const faireUneEnchere = (reference) => {
-                    var prix = document.getElementById(reference).value;
-                 //   console.log('Prix: ' + prix + ' reference :', reference)
+
+                    var prix = document.getElementsByClassName(reference)[0].value;
+                    var quantite = document.getElementsByClassName(reference)[1].value;
+                    var idpanierglobaledetails = document.getElementsByClassName(reference)[2].value;
+                   console.log('Prix: ' + prix + ' reference :', reference)
 
                     let xhr = new XMLHttpRequest();
                     xhr.open("POST", "/encherir");
-                    xhr.send(JSON.stringify({ "reference": reference, "prix": prix }));
+                    xhr.send(JSON.stringify({ "reference": reference, "prix": prix, "quantite": quantite, "idpanierglobaledetails": idpanierglobaledetails }));
+
 
                 }
             </script>

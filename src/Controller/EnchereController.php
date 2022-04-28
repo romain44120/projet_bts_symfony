@@ -29,7 +29,7 @@ class EnchereController extends AbstractController
         $allfournisseur = $res->toArray();
 
         date_default_timezone_set('Europe/Paris');
-        $dateactuelle = date('W');
+        $dateactuelle = date('d-M-y  H:i');
 
         $user = $this->getUser();//recup du nom d'user
         $societe=null;
@@ -63,6 +63,11 @@ class EnchereController extends AbstractController
         $res3 = $client->request(method: 'GET', url: 'https://localhost:44362/PanierGlobalDetail/GetReferenceByPanierGlobalAndFournisseur?ID_PANIER_GLOBAL='.$dernierPanierGlobal['id'].'&ID_FOURNISSEUR='.$Id_fournisseur.''); //appel a l'api
         $refbypanier = $res3->toArray();
 
+        $res4 = $client->request(method: 'GET', url: 'https://localhost:44362/PanierGlobalDetail/GetGlobalDetailByPanier?ID='.$dernierPanierGlobal['id'].''); //appel a l'api
+        $panierglobaldetail = $res4->toArray();
+
+        $res5 = $client->request(method: 'GET', url: 'https://localhost:44362/Reference/AllReferences'); //appel a l'api
+        $AllReferences = $res5->toArray();
 
 
         return $this->render(view: 'enchere/index.html.twig', parameters: [
@@ -71,10 +76,12 @@ class EnchereController extends AbstractController
             'allfournisseur' => $allfournisseur,
             'idfournisseur' => $Id_fournisseur,
             'refbypanier' => $refbypanier,
+            'panierglobaldetail' => $panierglobaldetail,
             'societe_Fournisseur' => $societe_Fournisseur,
             'encheres' => $derniereenchere,
             'enchere' => $enchereRepo ->findAll(),
-            'dateactuelle' => $dateactuelle
+            'dateactuelle' => $dateactuelle,
+            'AllReferences' => $AllReferences
         ]);
     }
 
@@ -96,13 +103,14 @@ class EnchereController extends AbstractController
         $dernierPanierGlobal = end(array: $allpanierglobal);
 
         $encheres = $enchereRepo ->findAll();
+
         dump($encheres);
-        foreach ($encheres as $temp){
-            if (  $dernierPanierGlobal['id'] == $encheres['idPanierGlobal']){
-                $tru=1;
-            }
-            dump($encheres);
-        }
+//        foreach ($encheres as $temp){
+//            if (  $dernierPanierGlobal['id'] == $encheres['idPanierGlobal']){
+//                $tru=1;
+//            }
+//            dump($encheres);
+//        }
 
         $enchere = new Enchere();
         $form = $this->createForm(type: AddEnchereType::class, data: $enchere);
@@ -127,20 +135,53 @@ class EnchereController extends AbstractController
     }
 
     #[Route(path: '/encherir', name: 'encherir')]
-    public function encherir(Request $request, EntityManagerInterface $entityManager) {
+    public function encherir(Request $request, EntityManagerInterface $entityManager,EnchereRepository $enchereRepo) {
         $parameters = json_decode($request->getContent(), true);
+        $user = $this->getUser();
+        $fournisseur = strval(value: $user->getUserIdentifier());
 
-
+        $derniereenchere = $enchereRepo->findOneBy([], ['id' => 'DESC']);
 
 
         $enchereFournisseur=new EnchereFournisseur();
-        $enchereFournisseur->idEnchere = 1;
+        $enchereFournisseur->idEnchere = $derniereenchere;
         $enchereFournisseur->prix = $parameters['prix'];
-        $enchereFournisseur->fournisseur = "test";
+        $enchereFournisseur->fournisseur = $fournisseur;
         $enchereFournisseur->produit = $parameters['reference'];
+        $enchereFournisseur->quantite = $parameters['quantite'];
+        $enchereFournisseur->id_panierglobaldetail = $parameters['idpanierglobaledetails'];
 
         $entityManager->persist($enchereFournisseur);
         $entityManager->flush();
+
+        $client = HttpClient::create(defaultOptions: ['verify_peer' => false, 'verify_host' => false]);
+        $res  = $client->request(method: 'GET', url: 'https://localhost:44362/Fournisseur/AllFounrisseurs');
+        $allfournisseur = $res->toArray();
+
+        foreach ( $allfournisseur as $fournisseur)// relation entre user symfony et le fournisseur
+        {
+            if ($fournisseur['prenom'] == strval(value: $user->getUserIdentifier())) {
+
+                $Id_fournisseur = $fournisseur['id'];
+            }
+        }
+        $client->request( 'POST',  'https://localhost:44362/OffreFournisseur',
+            ['headers' => [
+                "iD_FOURNISSEURS"=>$Id_fournisseur,
+                "offres"=>$parameters['prix'],
+                "iD_PANIER_GLOBALS_DETAILS"=>$parameters['idpanierglobaledetails'],
+
+                ]]);
+//
+//
+//         $client->request( 'POST',  'https://localhost:44362/OffreFournisseur',
+//            ['headers' => [
+//                "iD_FOURNISSEURS"=>1,
+//                "offres"=>1,
+//                "iD_PANIER_GLOBALS_DETAILS"=>2010,
+//
+//                ]]);
+
 
 
         return new JsonResponse(array('name' => $parameters['prix']));

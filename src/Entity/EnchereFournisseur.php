@@ -11,7 +11,7 @@ class EnchereFournisseur
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private $id;
+    public $id;
 
     #[ORM\ManyToOne(targetEntity: Enchere::class, inversedBy: 'enchereFournisseurs')]
     #[ORM\JoinColumn(nullable: true)]
@@ -25,6 +25,14 @@ class EnchereFournisseur
 
     #[ORM\Column(type: 'string', length: 100, nullable: true)]
     public $produit;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    public $quantite;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    public $id_panierglobaldetail;
+
+
 
     public function getId(): ?int
     {
@@ -78,4 +86,30 @@ class EnchereFournisseur
 
         return $this;
     }
+
+    public function getQuantite(): ?int
+    {
+        return $this->quantite;
+    }
+
+    public function setQuantite(?int $quantite): self
+    {
+        $this->quantite = $quantite;
+
+        return $this;
+    }
+
+    public function getIdPanierglobaldetail(): ?int
+    {
+        return $this->id_panierglobaldetail;
+    }
+
+    public function setIdPanierglobaldetail(?int $id_panierglobaldetail): self
+    {
+        $this->id_panierglobaldetail = $id_panierglobaldetail;
+
+        return $this;
+    }
+
+
 }
