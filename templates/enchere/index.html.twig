@@ -1,9 +1,9 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello EnchereController!{% endblock %}
+{% block title %}enchere{% endblock %}
 
 {% block body %}
-    <h1>Enchere</h1>
+    <h1 class="text-center">Enchere </h1>
 
     <ul>
         {% if (dateactuelle |date('d-M-y  H:i') < encheres.dateDebut |date('d-M-y  H:i')) %}
@@ -14,8 +14,8 @@
         {% endif %}
         {% if ( encheres.dateDebut |date('d-M-y  H:i') < dateactuelle |date('d-M-y  H:i') and  dateactuelle < encheres.dateFin |date('d-M-y  H:i')) %}
 
-    <a>l'enchere commencera le {{ encheres.dateDebut |date('d-M-y H:i:s')}} et ce finira le {{ encheres.dateFin |date('d-M-y H:i:s')}}</a>
-        <li>vous encherisser pour la societé {{ societe_Fournisseur }}</li>
+    <h3>l'enchere commencera le {{ encheres.dateDebut |date('d-M-y H:i:s')}} et ce finira le {{ encheres.dateFin |date('d-M-y H:i:s')}}</h3>
+        <h3>vous encherisser pour la societé {{ societe_Fournisseur }}</h3>
 
 
         <table>

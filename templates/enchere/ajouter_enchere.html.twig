@@ -1,27 +1,36 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello EnchereController!{% endblock %}
+{% block title %}Ajouter une Enchere{% endblock %}
 
 {% block body %}
 <h1>Ajouter une Enchere</h1>
+<div class="container">
 
-<h2>allpanierglobal</h2>
-   {% for panier in allpanierglobal%}
-      <li>id panier {{ panier.id }}</li>
-      <li>semaine {{ panier.semaine }}</li>
-   {% endfor %}
 
-{#   {% for dernierPanierGlobal in dernierPanierGlobal%}#}
-{#      <li>{{ dernierPanierGlobal.id }}</li>#}
-{#      <li>{{ dernierPanierGlobal.semaine }}</li>#}
-{#   {% endfor %}#}
+   <p>semaine actuelle: {{ semaineactuelle+1 }}</p>
+   <p>semaine du dernier panier globale: {{ dernierPanierGlobal.semaine }}</p>
+   <p>id du dernier panier globale: {{ dernierPanierGlobal.id }}</p>
+
+   {% if dernierPanierGlobal.semaine != semaineactuelle+1 %}
+      <h3> ATTENTION !!! il n'existe pas de panier global pour cette semaine </h3>
+   {% else %}
+      {% if dernierPanierGlobal.id == derniereenchere.idPanierGlobal %}
+         <h3> ATTENTION !!! il existe deja une enchere pour cette semaine </h3>
+      {% else %}
+         <h3> Il n'y a pas d'enchere pour cette semaine </h3>
+      {% endif %}
+   {% endif %}
+
+
+
+
    <div class="form-group">
       {{ form_start(form) }}
       {{ form_widget(form) }}
       <button type="submit" class="btn btn-success">Ajouter</button>
       {{ form_end(form) }}
    </div>
-
+</div>
 
    </ul>
 

@@ -102,15 +102,10 @@ class EnchereController extends AbstractController
         $allpanierglobal= $res2 ->toArray();
         $dernierPanierGlobal = end(array: $allpanierglobal);
 
-        $encheres = $enchereRepo ->findAll();
+        date_default_timezone_set('Europe/Paris');
+        $semaineactuelle = date('W');
+        $derniereenchere = $enchereRepo->findOneBy([], ['id' => 'DESC']);
 
-        dump($encheres);
-//        foreach ($encheres as $temp){
-//            if (  $dernierPanierGlobal['id'] == $encheres['idPanierGlobal']){
-//                $tru=1;
-//            }
-//            dump($encheres);
-//        }
 
         $enchere = new Enchere();
         $form = $this->createForm(type: AddEnchereType::class, data: $enchere);
@@ -129,7 +124,8 @@ class EnchereController extends AbstractController
             'allpanierglobal' => $allpanierglobal,
             'dernierPanierGlobal' => $dernierPanierGlobal,
             'form' => $form->createView(),
-
+            'semaineactuelle' => $semaineactuelle,
+            'derniereenchere' => $derniereenchere,
         ]);
 
     }
@@ -165,20 +161,21 @@ class EnchereController extends AbstractController
                 $Id_fournisseur = $fournisseur['id'];
             }
         }
+
         $client->request( 'POST',  'https://localhost:44362/OffreFournisseur',
-            ['headers' => [
+            ['body' => [
                 "iD_FOURNISSEURS"=>$Id_fournisseur,
                 "offres"=>$parameters['prix'],
                 "iD_PANIER_GLOBALS_DETAILS"=>$parameters['idpanierglobaledetails'],
 
-                ]]);
-//
+            ]]);
+////
 //
 //         $client->request( 'POST',  'https://localhost:44362/OffreFournisseur',
 //            ['headers' => [
-//                "iD_FOURNISSEURS"=>1,
-//                "offres"=>1,
-//                "iD_PANIER_GLOBALS_DETAILS"=>2010,
+//                  "iD_FOURNISSEURS"=>$Id_fournisseur,
+//                "offres"=>$parameters['prix'],
+//                "iD_PANIER_GLOBALS_DETAILS"=>$parameters['idpanierglobaledetails'],
 //
 //                ]]);
 
